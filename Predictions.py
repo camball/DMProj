@@ -29,7 +29,7 @@ CATEGORIES = ["20", "30", "50", "60", "70", "80", "80 Ends", "100", "120", "No o
               ]
 
 StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")
-test_path = "StreetSignModel/Data/StreetSigns/Valid"
+test_path = "StreetSignModel/Data/StreetSigns/Test"
 test_batches = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(directory=test_path,
                                                                                              target_size=(224, 224),

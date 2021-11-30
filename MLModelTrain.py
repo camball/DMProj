@@ -20,7 +20,7 @@ StreetSignModel = Sequential()
 for layer in VGG16_default.layers[:-1]:
     StreetSignModel.add(layer)
 
-for layer in StreetSignModel.layers:
+for layer in StreetSignModel.layers[:-10]:
     layer.trainable = False
 
 StreetSignModel.add(Dense(units=43, activation='softmax'))
@@ -50,7 +50,7 @@ train_batches = ImageDataGenerator(
                                                                                                       '36', '37', '38',
                                                                                                       '39', '40', '41',
                                                                                                       '42'],
-                                                                                             batch_size=128)
+                                                                                             batch_size=32)
 
 valid_batches = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(directory=valid_path,
@@ -70,7 +70,8 @@ valid_batches = ImageDataGenerator(
                                                                                                       '36', '37', '38',
                                                                                                       '39', '40', '41',
                                                                                                       '42'],
-                                                                                             batch_size=128)
+                                                                                             batch_size=32
+                                                                                             )
 
 
 imgs, labels = next(train_batches)
