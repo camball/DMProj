@@ -24,12 +24,12 @@ if os.path.isdir('StreetSigns/Train/0/') is False:
     os.mkdir('StreetSigns/Train')
     os.mkdir('StreetSigns/Valid')
 
-for i in range(0, 43):
+for i in range(43):
     os.mkdir(f'StreetSigns/Train/{i}')
     os.mkdir(f'StreetSigns/Valid/{i}')
     os.mkdir(f'StreetSigns/Test/{i}')
 
-for i in range(0, 43):
+for i in range(43):
 
     train_samples = random.sample(os.listdir(f'StreetSigns/TrainAndValid/{i}'), 147)
 
