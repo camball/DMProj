@@ -93,4 +93,6 @@ plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
+# Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
+# Cannot find link
 print("ML Model Completed")
