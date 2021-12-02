@@ -1,14 +1,13 @@
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Activation, Dense, Flatten, BatchNormalization, Conv2D, MaxPool2D
+from tensorflow.keras.applications.vgg16 import preprocess_input, VGG16
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
+from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.callbacks import EarlyStopping
 
-VGG16_default = tf.keras.applications.vgg16.VGG16()
+VGG16_default = VGG16()
 
 VGG16_default.summary()
 
@@ -17,7 +16,7 @@ StreetSignModel = Sequential()
 for layer in VGG16_default.layers[:-1]:
     StreetSignModel.add(layer)
 
-for layer in StreetSignModel.layers:
+for layer in StreetSignModel.layers[:-10]:
     layer.trainable = False
 
 StreetSignModel.add(Dense(units=43, activation='softmax'))
@@ -25,49 +24,19 @@ StreetSignModel.add(Dense(units=43, activation='softmax'))
 StreetSignModel.summary()
 
 train_path = "StreetSignModel/Data/StreetSigns/Train"
-
 valid_path = "StreetSignModel/Data/StreetSigns/Valid"
+classes = [f'{n}' for n in range(43)]
 
+train_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=train_path,
+                                                                                                target_size=(224, 224),
+                                                                                                classes=classes,
+                                                                                                batch_size=32)
 
-train_batches = ImageDataGenerator(
-    preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(directory=train_path,
-                                                                                             target_size=(224, 224),
-                                                                                             classes=['0', '1', '2',
-                                                                                                      '3', '4', '5',
-                                                                                                      '6', '7', '8',
-                                                                                                      '9', '10', '11',
-                                                                                                      '12', '13', '14',
-                                                                                                      '15', '16', '17',
-                                                                                                      '18', '19', '20',
-                                                                                                      '21', '22', '23',
-                                                                                                      '24', '25', '26',
-                                                                                                      '27', '28', '29',
-                                                                                                      '30', '31', '32',
-                                                                                                      '33', '34', '35',
-                                                                                                      '36', '37', '38',
-                                                                                                      '39', '40', '41',
-                                                                                                      '42'],
-                                                                                             batch_size=128)
+valid_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=valid_path,
+                                                                                                target_size=(224, 224),
+                                                                                                classes=classes,
+                                                                                                batch_size=32)
 
-valid_batches = ImageDataGenerator(
-    preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(directory=valid_path,
-                                                                                             target_size=(224, 224),
-                                                                                             classes=['0', '1', '2',
-                                                                                                      '3', '4', '5',
-                                                                                                      '6', '7', '8',
-                                                                                                      '9', '10', '11',
-                                                                                                      '12', '13', '14',
-                                                                                                      '15', '16', '17',
-                                                                                                      '18', '19', '20',
-                                                                                                      '21', '22', '23',
-                                                                                                      '24', '25', '26',
-                                                                                                      '27', '28', '29',
-                                                                                                      '30', '31', '32',
-                                                                                                      '33', '34', '35',
-                                                                                                      '36', '37', '38',
-                                                                                                      '39', '40', '41',
-                                                                                                      '42'],
-                                                                                             batch_size=128)
 
 
 imgs, labels = next(train_batches)
@@ -111,5 +80,7 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='upper left')
 plt.show()
+
+#Plot
 
 
