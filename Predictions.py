@@ -13,6 +13,8 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
+from sklearn.metrics import classification_report, confusion_matrix
+
 
 Categories = {0: '(20km/h)',
               1: '(30km/h)',
@@ -201,3 +203,5 @@ CummulativeResults = [
 print("Final Results: ")
 print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ",
                                             "Total Prediction time"]))
+
+
