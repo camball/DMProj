@@ -11,6 +11,8 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
+from DecisionTree import TrainModel
+
 
 Categories = {0: '(20km/h)',
               1: '(30km/h)',
@@ -153,3 +155,19 @@ CummulativeResults = [
 
 print("Final Results: ")
 print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ", "Total Prediction time"]))
+
+
+df_test1 = pd.read_csv('Data/StreetSigns/csvfiles/Test.csv')
+df_test1.head()
+
+df_test = df_test1.merge(df_meta, on="ClassId")
+
+feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
+
+X_test = df_test[feature_cols]
+y_test = df_test.ClassId
+
+TrainModel()
+
+dt_model = joblib.load('DecisionTree_model.sav')
+y_pred = clf.predict(X_test)
