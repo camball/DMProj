@@ -15,7 +15,6 @@ import seaborn as sns
 from tabulate import tabulate
 from sklearn.metrics import classification_report, confusion_matrix
 
-
 Categories = {0: '(20km/h)',
               1: '(30km/h)',
               2: '(50km/h)',
@@ -79,9 +78,10 @@ Categories = {0: '(20km/h)',
 # Code inspiration from https://www.kaggle.com/indhusree/traffic-signal-predection-cnn
 
 test_path = "StreetSignModel/Data/StreetSigns/Test"
+# Sets the test path for the models
 
-StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")
-StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")
+StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")  # Loads in the VGG16 Based Sequential model
+StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")  # Loads in the MobileNet Based Functional Model
 
 VGG16test_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=test_path,
                                                                                                     target_size=(
@@ -91,20 +91,24 @@ VGG16test_batches = ImageDataGenerator(preprocessing_function=preprocess_input).
                                                                                                              range(43)],
                                                                                                     batch_size=32,
                                                                                                     shuffle=False)
+# Creates the test batches for VGG16, using VGG16 preprocessing. Avoids shuffling labels to create Confusion Matrix
 
 MobileNetTestBatches = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.mobilenet.preprocess_input).flow_from_directory(
     directory=test_path, target_size=(224, 224), batch_size=32, shuffle=False)
 
+# Creates the test batches for MobileNet, uses MobileNet Preprocessing
+
+
 print("Starting evaluation for ML Model VGG16")
 starttime = time.time()
-VGG16Score = StreetSignModelVgg16.evaluate(VGG16test_batches)
+VGG16Score = StreetSignModelVgg16.evaluate(VGG16test_batches)  # Evaluates the VGG16 Model Accuracy and Loss
 VGG16EvaluationTime = time.time() - starttime
 print("Evaluation of ML Model VGG16 Complete")
 
 print("Starting predictions for ML Model VGG16")
 starttime = time.time()
-y_pred = np.argmax(StreetSignModelVgg16.predict(VGG16test_batches), axis=-1)
+y_pred = np.argmax(StreetSignModelVgg16.predict(VGG16test_batches), axis=-1)  # Gets the top prediction for every image
 VGG16PredictionTime = time.time() - starttime
 print("Predictions for ML Model VGG16 Complete, Total Time: ", VGG16PredictionTime, "Seconds")
 
@@ -121,19 +125,23 @@ plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
+# Creates a Confusion Matrix Heatmap to see where the model is misclassified images
+
 # Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
 # Cannot find link
 
 
 print("Starting evaluation for ML Model MobileNet")
 starttime = time.time()
-MobileNetScore = StreetSignMobileNet.evaluate(MobileNetTestBatches)
+MobileNetScore = StreetSignMobileNet.evaluate(MobileNetTestBatches)  # Evaluates the MobileNet Model Accuracy and Loss
 MobileNetEvaluationTime = time.time() - starttime
 print("Evaluation of ML Model ML Model MobileNet Complete")
 
 print("Starting Predictions for MobileNet Model: ")
 starttime = time.time()
-y_pred = np.argmax(StreetSignMobileNet.predict(MobileNetTestBatches), axis=-1)
+y_pred = np.argmax(StreetSignMobileNet.predict(MobileNetTestBatches),
+                   axis=-1)  # Gets the top prediction for every image
+
 MobileNetPredictionTime = time.time() - starttime
 print("Finished predictions for MobileNet Model. Total Time: ", MobileNetPredictionTime, "Seconds")
 
@@ -146,6 +154,8 @@ plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
+# Creates a Confusion Matrix Heatmap to see where the model is misclassified images
+
 # Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
 # Cannot find link
 
@@ -153,22 +163,19 @@ print(" ")
 print(" ")
 print(" ")
 
-
-
 df_test1 = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Test.csv')
 df_meta = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Meta.csv')
 feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
 
 df_test1.head()
 
-#merge test and meta to match training data
+# merge test and meta to match training data
 df_test = df_test1.merge(df_meta, on="ClassId")
-
 
 X_test = df_test[feature_cols]
 y_test = df_test.ClassId
 
-#load decision tree model
+# load decision tree model
 clf = joblib.load('Models/DecisionTree_model.sav')
 
 print("Starting Evaluation for Decision Tree Model")
@@ -177,14 +184,13 @@ score = clf.score(X=X_test, y=y_test)
 DecisionTreeEvaluationTime = timeit.default_timer() - starttime
 print("Finished predictions for Decision Tree Model. Total Time: ", DecisionTreeEvaluationTime, "Seconds")
 
-
 print("Starting Predictions for Decision Tree Model")
 starttime = timeit.default_timer()
 y_pred = clf.predict(X_test)
 DecisionTreePredictTime = timeit.default_timer() - starttime
 print("Finished predictions for Decision Tree Model. Total Time: ", DecisionTreePredictTime, "Seconds")
 
-#decision tree model prediciton confusion matrix heat map
+# decision tree model prediciton confusion matrix heat map
 con_mat = tf.math.confusion_matrix(labels=y_test, predictions=y_pred).numpy()
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
@@ -195,8 +201,6 @@ plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 
-
-
 CummulativeResults = [
     ["VGG 16", VGG16Score[0], VGG16Score[1], VGG16EvaluationTime, VGG16PredictionTime],
     ["MobileNet", MobileNetScore[0], MobileNetScore[1], MobileNetEvaluationTime, MobileNetPredictionTime],
@@ -206,5 +210,3 @@ CummulativeResults = [
 print("Final Results: ")
 print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ",
                                             "Total Prediction time"]))
-
-
