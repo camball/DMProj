@@ -4,27 +4,26 @@ import timeit
 import joblib
 import numpy as np
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from tabulate import tabulate
 from tensorflow import math
 from tensorflow.keras.models import load_model
 from tensorflow.keras.applications import vgg16, mobilenet
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import matplotlib.pyplot as plt
-import seaborn as sns
-from tabulate import tabulate
-# from sklearn.metrics import classification_report, confusion_matrix
 
 
 Categories = {
-    0: '(20km/h)',
-    1: '(30km/h)',
-    2: '(50km/h)',
-    3: '(60km/h)',
-    4: '(70km/h)',
-    5: '(80km/h)',
-    6: 'End of (80km/h)',
-    7: '(100km/h)',
-    8: '(120km/h)',
-    9: 'No passing',
+    0:  '(20km/h)',
+    1:  '(30km/h)',
+    2:  '(50km/h)',
+    3:  '(60km/h)',
+    4:  '(70km/h)',
+    5:  '(80km/h)',
+    6:  'End of (80km/h)',
+    7:  '(100km/h)',
+    8:  '(120km/h)',
+    9:  'No passing',
     10: 'No overtaking by trucks',
     11: 'Crossroads ahead side roads to right and left',
     12: 'Priority road',
@@ -83,7 +82,7 @@ test_path = "StreetSignModel/Data/StreetSigns/Test" # Test path for the models
 StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")  # Loads in the VGG16 Based Sequential model
 StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")  # Loads in the MobileNet Based Functional Model
 
-# Creates the test batches for VGG16, using VGG16 preprocessing. Avoids shuffling labels to create Confusion Matrix
+# Create test batches for VGG16, using VGG16 preprocessing. Avoids shuffling labels to create Confusion Matrix
 VGG16test_batches = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input)
 VGG16test_batches.flow_from_directory(
     directory=test_path, 
@@ -93,7 +92,7 @@ VGG16test_batches.flow_from_directory(
     shuffle=False
 )
 
-# Creates the test batches for MobileNet, uses MobileNet Preprocessing
+# Create test batches for MobileNet, using MobileNet preprocessing
 MobileNetTestBatches = ImageDataGenerator(preprocessing_function=mobilenet.preprocess_input)
 MobileNetTestBatches.flow_from_directory(
     directory=test_path, 
@@ -101,8 +100,6 @@ MobileNetTestBatches.flow_from_directory(
     batch_size=32, 
     shuffle=False
 )
-
-# Creates the test batches for MobileNet, uses MobileNet Preprocessing
 
 
 print("Starting evaluation for ML Model VGG16")
@@ -117,23 +114,19 @@ y_pred = np.argmax(StreetSignModelVgg16.predict(VGG16test_batches), axis=-1)  # 
 VGG16PredictionTime = time.time() - starttime
 print("Predictions for ML Model VGG16 Complete, Total Time: ", VGG16PredictionTime, "Seconds")
 
-print(" ")
-print(" ")
-print(" ")
+print('\n\n\n', end='')
 
 # Create Confusion Matrix Heatmap to see where the model is misclassified images
 con_mat = math.confusion_matrix(labels=VGG16test_batches.labels, predictions=y_pred).numpy()
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
 figure = plt.figure(figsize=(16, 12))
+# Used code from a website on using seaborn to create a confusion matrix w/ a heatmap. Cannot find link
 sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
 plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
-
-# Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
-# Cannot find link
 
 
 print("Starting evaluation for ML Model MobileNet")
@@ -145,7 +138,6 @@ print("Evaluation of ML Model ML Model MobileNet Complete")
 print("Starting Predictions for MobileNet Model: ")
 starttime = time.time()
 y_pred = np.argmax(StreetSignMobileNet.predict(MobileNetTestBatches), axis=-1)  # Get top prediction for every image
-
 MobileNetPredictionTime = time.time() - starttime
 print("Finished predictions for MobileNet Model. Total Time: ", MobileNetPredictionTime, "Seconds")
 
@@ -154,18 +146,14 @@ con_mat = math.confusion_matrix(labels=MobileNetTestBatches.labels, predictions=
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
 figure = plt.figure(figsize=(16, 12))
+# Used code from a website on using seaborn to create a confusion matrix w/ a heatmap. Cannot find link
 sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
 plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 
-# Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
-# Cannot find link
-
-print(" ")
-print(" ")
-print(" ")
+print('\n\n\n', end='')
 
 df_test1 = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Test.csv')
 df_meta = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Meta.csv')
