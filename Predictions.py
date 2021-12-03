@@ -161,12 +161,14 @@ feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
 
 df_test1.head()
 
+#merge test and meta to match training data
 df_test = df_test1.merge(df_meta, on="ClassId")
 
 
 X_test = df_test[feature_cols]
 y_test = df_test.ClassId
 
+#load decision tree model
 clf = joblib.load('Models/DecisionTree_model.sav')
 
 print("Starting Evaluation for Decision Tree Model")
@@ -182,6 +184,7 @@ y_pred = clf.predict(X_test)
 DecisionTreePredictTime = timeit.default_timer() - starttime
 print("Finished predictions for Decision Tree Model. Total Time: ", DecisionTreePredictTime, "Seconds")
 
+#decision tree model prediciton confusion matrix heat map
 con_mat = tf.math.confusion_matrix(labels=y_test, predictions=y_pred).numpy()
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
