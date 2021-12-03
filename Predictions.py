@@ -1,6 +1,8 @@
 # import cv2
 import time
+import timeit
 
+import joblib
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import load_model
@@ -11,8 +13,6 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
-from DecisionTree import TrainModel
-
 
 Categories = {0: '(20km/h)',
               1: '(30km/h)',
@@ -83,7 +83,7 @@ StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")
 
 VGG16test_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=test_path,
                                                                                                     target_size=(
-                                                                                                    224, 224),
+                                                                                                        224, 224),
                                                                                                     classes=[f'{n}' for
                                                                                                              n in
                                                                                                              range(43)],
@@ -97,7 +97,7 @@ MobileNetTestBatches = ImageDataGenerator(
 print("Starting evaluation for ML Model VGG16")
 starttime = time.time()
 VGG16Score = StreetSignModelVgg16.evaluate(VGG16test_batches)
-VGG16EvaluationTime = time.time()-starttime
+VGG16EvaluationTime = time.time() - starttime
 print("Evaluation of ML Model VGG16 Complete")
 
 print("Starting predictions for ML Model VGG16")
@@ -147,27 +147,57 @@ plt.show()
 # Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
 # Cannot find link
 
-
-CummulativeResults = [
-    ["VGG 16", VGG16Score[0], VGG16Score[1], VGG16EvaluationTime, VGG16PredictionTime],
-    ["MobileNet", MobileNetScore[0], MobileNetScore[1], MobileNetEvaluationTime, MobileNetPredictionTime]
-]
-
-print("Final Results: ")
-print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ", "Total Prediction time"]))
+print(" ")
+print(" ")
+print(" ")
 
 
-df_test1 = pd.read_csv('Data/StreetSigns/csvfiles/Test.csv')
+
+df_test1 = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Test.csv')
+df_meta = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Meta.csv')
+feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
+
 df_test1.head()
 
 df_test = df_test1.merge(df_meta, on="ClassId")
 
-feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
 
 X_test = df_test[feature_cols]
 y_test = df_test.ClassId
 
-TrainModel()
+clf = joblib.load('Models/DecisionTree_model.sav')
 
-dt_model = joblib.load('DecisionTree_model.sav')
+print("Starting Evaluation for Decision Tree Model")
+starttime = timeit.default_timer()
+score = clf.score(X=X_test, y=y_test)
+DecisionTreeEvaluationTime = timeit.default_timer() - starttime
+print("Finished predictions for Decision Tree Model. Total Time: ", DecisionTreeEvaluationTime, "Seconds")
+
+
+print("Starting Predictions for Decision Tree Model")
+starttime = timeit.default_timer()
 y_pred = clf.predict(X_test)
+DecisionTreePredictTime = timeit.default_timer() - starttime
+print("Finished predictions for Decision Tree Model. Total Time: ", DecisionTreePredictTime, "Seconds")
+
+con_mat = tf.math.confusion_matrix(labels=y_test, predictions=y_pred).numpy()
+con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
+con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
+figure = plt.figure(figsize=(16, 12))
+sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
+plt.tight_layout()
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+plt.show()
+
+
+
+CummulativeResults = [
+    ["VGG 16", VGG16Score[0], VGG16Score[1], VGG16EvaluationTime, VGG16PredictionTime],
+    ["MobileNet", MobileNetScore[0], MobileNetScore[1], MobileNetEvaluationTime, MobileNetPredictionTime],
+    ["Decision Tree", "N/A", score, DecisionTreeEvaluationTime, DecisionTreePredictTime]
+]
+
+print("Final Results: ")
+print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ",
+                                            "Total Prediction time"]))
