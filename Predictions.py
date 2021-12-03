@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
 from DecisionTree import TrainModel
+from sklearn.metrics import classification_report, confusion_matrix
 
 
 Categories = {0: '(20km/h)',
@@ -173,3 +174,9 @@ starttime = time.time()
 y_pred = clf.predict(X_test)
 dt_prediction_time = time.time() - starttime
 print("Prediction Time for decision Tree: ", dt_prediction_time, "s")
+
+print(classification_report(y_test, y_pred))
+
+dt_confusion_matrix = confusion_matrix(y_test, y_pred)
+
+
