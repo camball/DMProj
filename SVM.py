@@ -24,7 +24,6 @@ import pandas as pd
 flat_data_arr: list[np.ndarray] = [] # input array
 target_arr: list[int] = [] # output array
 
-# categories=['Cars','Ice cream cone','Cricket ball']
 streetsigns = [f'{n}' for n in range(43)]
 datadir = 'StreetSigns/Train'
 
