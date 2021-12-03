@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
 
+
 VGG16_default = VGG16()
 
 VGG16_default.summary()
@@ -24,7 +25,6 @@ StreetSignModel.summary()
 
 train_path = "StreetSignModel/Data/StreetSigns/Train"
 valid_path = "StreetSignModel/Data/StreetSigns/Valid"
-
 classes = [f'{n}' for n in range(43)]
 
 train_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=train_path,
@@ -38,11 +38,12 @@ valid_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow
                                                                                                 batch_size=32)
 
 
+
 imgs, labels = next(train_batches)
 
 
 def plotImages(images_arr):
-    _, axes = plt.subplots(1, 10, figsize=(20, 20))
+    fig, axes = plt.subplots(1, 10, figsize=(20, 20))
     axes = axes.flatten()
     for img, ax in zip(images_arr, axes):
         ax.imshow(img)
