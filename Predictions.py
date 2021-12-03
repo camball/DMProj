@@ -10,6 +10,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tabulate import tabulate
 
 Categories = {0: '(20km/h)',
               1: '(30km/h)',
@@ -78,35 +79,40 @@ test_path = "StreetSignModel/Data/StreetSigns/Test"
 StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")
 StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")
 
-
-
 VGG16test_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(directory=test_path,
-                                                                                               target_size=(224, 224),
-                                                                                               classes=[f'{n}' for n in
-                                                                                                        range(43)],
-                                                                                               batch_size=32,
-                                                                                               shuffle=False)
+                                                                                                    target_size=(
+                                                                                                    224, 224),
+                                                                                                    classes=[f'{n}' for
+                                                                                                             n in
+                                                                                                             range(43)],
+                                                                                                    batch_size=32,
+                                                                                                    shuffle=False)
 
 MobileNetTestBatches = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.mobilenet.preprocess_input).flow_from_directory(
     directory=test_path, target_size=(224, 224), batch_size=32, shuffle=False)
 
-
 print("Starting evaluation for ML Model VGG16")
-StreetSignModelVgg16.evaluate(VGG16test_batches)
+starttime = time.time()
+VGG16Score = StreetSignModelVgg16.evaluate(VGG16test_batches)
+VGG16EvaluationTime = time.time()-starttime
 print("Evaluation of ML Model VGG16 Complete")
 
 print("Starting predictions for ML Model VGG16")
-starttime= time.time()
+starttime = time.time()
 y_pred = np.argmax(StreetSignModelVgg16.predict(VGG16test_batches), axis=-1)
-print("Predictions for ML Model VGG16 Complete, Total Time: ", time.time() - starttime)
+VGG16PredictionTime = time.time() - starttime
+print("Predictions for ML Model VGG16 Complete, Total Time: ", VGG16PredictionTime, "Seconds")
 
+print(" ")
+print(" ")
+print(" ")
 
 con_mat = tf.math.confusion_matrix(labels=VGG16test_batches.labels, predictions=y_pred).numpy()
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
 figure = plt.figure(figsize=(16, 12))
-sns.heatmap(con_mat_df, annot=True,cmap=plt.cm.Blues)
+sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
 plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
@@ -116,23 +122,34 @@ plt.show()
 
 
 print("Starting evaluation for ML Model MobileNet")
-StreetSignMobileNet.evaluate(MobileNetTestBatches)
+starttime = time.time()
+MobileNetScore = StreetSignMobileNet.evaluate(MobileNetTestBatches)
+MobileNetEvaluationTime = time.time() - starttime
 print("Evaluation of ML Model ML Model MobileNet Complete")
 
 print("Starting Predictions for MobileNet Model: ")
 starttime = time.time()
 y_pred = np.argmax(StreetSignMobileNet.predict(MobileNetTestBatches), axis=-1)
-print("Finished predictions for MobileNet Model. Total Time: ", time.time()-starttime)
-
+MobileNetPredictionTime = time.time() - starttime
+print("Finished predictions for MobileNet Model. Total Time: ", MobileNetPredictionTime, "Seconds")
 
 con_mat = tf.math.confusion_matrix(labels=MobileNetTestBatches.labels, predictions=y_pred).numpy()
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 con_mat_df = pd.DataFrame(con_mat_norm, index=Categories, columns=Categories)
 figure = plt.figure(figsize=(16, 12))
-sns.heatmap(con_mat_df, annot=True,cmap=plt.cm.Blues)
+sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
 plt.tight_layout()
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 # Used code from a website instructing on how to use seaborn to create a confusion matrix with a heatmap.
 # Cannot find link
+
+
+CummulativeResults = [
+    ["VGG 16", VGG16Score[0], VGG16Score[1], VGG16EvaluationTime, VGG16PredictionTime],
+    ["MobileNet", MobileNetScore[0], MobileNetScore[1], MobileNetEvaluationTime, MobileNetPredictionTime]
+]
+
+print("Final Results: ")
+print(tabulate(CummulativeResults, headers=["Model Name", "Final Loss", "Test Accuracy", "Total evaluation time ", "Total Prediction time"]))
