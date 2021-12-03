@@ -167,7 +167,9 @@ feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
 X_test = df_test[feature_cols]
 y_test = df_test.ClassId
 
-TrainModel()
-
 dt_model = joblib.load('DecisionTree_model.sav')
+
+starttime = time.time()
 y_pred = clf.predict(X_test)
+dt_prediction_time = time.time() - starttime
+print("Prediction Time for decision Tree: ", dt_prediction_time, "s")
