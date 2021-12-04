@@ -25,7 +25,7 @@ flat_data_arr: list[np.ndarray] = [] # input array
 target_arr: list[int] = [] # output array
 
 streetsigns = [f'{n}' for n in range(43)]
-datadir = 'StreetSigns/Train'
+datadir = '../StreetSigns/Train'
 
 for sign in streetsigns:
     categoryFolder = os.path.join(datadir, sign)

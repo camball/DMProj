@@ -7,8 +7,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
 
-train_path = "StreetSignModel/Data/StreetSigns/Train"  # Declares the training path
-valid_path = "StreetSignModel/Data/StreetSigns/Valid"  # Declares the validation path
+train_path = "../StreetSigns/Train"  # Declares the training path
+valid_path = "../StreetSigns/Valid"  # Declares the validation path
 
 train_batches = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.mobilenet.preprocess_input).flow_from_directory(
@@ -43,7 +43,7 @@ StreetSignMobileNet.compile(optimizer=Adam(learning_rate=.0001), loss='categoric
 history = StreetSignMobileNet.fit(x=train_batches, validation_data=valid_batches, epochs=30, verbose=2)
 # Trains the model for a maximum of 30 epochs.
 
-StreetSignMobileNet.save("Models/StreetSignMobileNet.h5")
+StreetSignMobileNet.save("../Models/StreetSignMobileNet.h5")
 # Saves the model to the models folder.
 
 plt.plot(history.history['accuracy'])

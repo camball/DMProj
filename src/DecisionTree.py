@@ -7,8 +7,8 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 
 # merge meta and train dataset to increase accuracy
-df_train = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Train.csv')
-df_meta = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Meta.csv')
+df_train = pd.read_csv('../StreetSigns/csvfiles/Train.csv')
+df_meta = pd.read_csv('../StreetSigns/csvfiles/Meta.csv')
 
 df_train.head()
 df_meta.head()
@@ -26,7 +26,7 @@ clf = DecisionTreeClassifier(max_depth=9, min_samples_leaf=5)
 clf = clf.fit(X_train, y_train)
 
 # store model
-filename = 'Models/DecisionTree_model.sav'
+filename = '../Models/DecisionTree_model.sav'
 joblib.dump(clf, filename)
 
 

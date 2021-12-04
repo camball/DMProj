@@ -77,10 +77,10 @@ Categories = {
 # Code used to generate the frequency of classes in training set. Output is in the report
 # Code inspiration from https://www.kaggle.com/indhusree/traffic-signal-predection-cnn
 
-test_path = "StreetSignModel/Data/StreetSigns/Test" # Test path for the models
+test_path = "StreetSigns/Test" # Test path for the models
 
-StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")  # Loads in the VGG16 Based Sequential model
-StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")  # Loads in the MobileNet Based Functional Model
+StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5") # Load the VGG16 Based Sequential model
+StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5") # Load the MobileNet Based Functional Model
 
 # Create test batches for VGG16, using VGG16 preprocessing. Avoids shuffling labels to create Confusion Matrix
 VGG16test_batches = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input).flow_from_directory(
@@ -153,8 +153,8 @@ plt.show()
 
 print('\n\n\n', end='')
 
-df_test1 = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Test.csv')
-df_meta = pd.read_csv('StreetSignModel/Data/StreetSigns/csvfiles/Meta.csv')
+df_test1 = pd.read_csv('StreetSigns/csvfiles/Test.csv')
+df_meta = pd.read_csv('StreetSigns/csvfiles/Meta.csv')
 feature_cols = ['Roi.X1', 'Roi.Y1', 'Roi.X2', 'Roi.Y2', 'ShapeId', 'ColorId']
 
 df_test1.head()

@@ -19,8 +19,8 @@ for layer in StreetSignModel.layers[:-10]:
 StreetSignModel.add(Dense(units=43, activation='softmax'))
 
 
-train_path = "StreetSignModel/Data/StreetSigns/Train"
-valid_path = "StreetSignModel/Data/StreetSigns/Valid"
+train_path = "../StreetSigns/Train"
+valid_path = "../StreetSigns/Valid"
 
 classes = [f'{n}' for n in range(43)] # Each number represents a class
 
@@ -74,7 +74,7 @@ History = StreetSignModel.fit(
     verbose=2
 )
 
-StreetSignModel.save("Models/MLModelVGG16.h5")  # Save model architecture and weights
+StreetSignModel.save("../Models/MLModelVGG16.h5")  # Save model architecture and weights
 
 plt.plot(History.history['accuracy'])
 plt.plot(History.history['val_accuracy'])
