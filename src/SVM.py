@@ -79,11 +79,6 @@ param_grid = {
 }
 
 svc = SVC(probability=True)
-
-# construct our model using the classifier and different parameter values. When we call fit(),
-# the model will try the parameters to find the best ones. I specify the n_jobs parameter to 
-# attempt to speed up fit() process via parallelization. My computer crashed when I
-# parallelized across all cpu cores, so I'm doing two less than the max, for a total of ten.
 model = GridSearchCV(svc, param_grid)
 
 model.fit(x_train, y_train)
