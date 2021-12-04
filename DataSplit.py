@@ -1,3 +1,11 @@
+"""
+The sole purpose of this script is for organizing the downloaded data from
+https://www.kaggle.com/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?select=Train
+into a format that we can work with. If you cloned or downloaded the code
+from this repository, do not run this; the data is already formatted in
+directory `StreetSigns`.
+"""
+
 import shutil
 import os
 import random
