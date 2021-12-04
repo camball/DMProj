@@ -51,6 +51,7 @@
       - `python3.9 -m pip install pandas`
 
 ## Usage
-1. To run `Predictions.py`, you need a file that is too large to store on GitHub. 
-    1. From the root directory, run `src/MLModelTrain.py`. This will generate the `MLModelVGG16.h5` file.
+1. Run `Predictions.py` to run the tests, get the model accuracies, and print the final results. To run it, you need a file that is too large to store on GitHub.
+    1. `cd` into `src/`, then run `python3.9 MLModelTrain.py`. This will generate the `MLModelVGG16.h5` file.
     2. If you receive errors about "local issuer certificates", you need to run `Install Certificates.command` that was given to you with your Python 3.9 installation.
+2. After `MLModelVGG16.h5` is generated, you can run `Predictions.py`. If you still want want to run the other model trainings from scratch, `cd` into `src/`, then run `python3.9 <file>`.
