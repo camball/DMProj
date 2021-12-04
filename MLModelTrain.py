@@ -26,16 +26,14 @@ classes = [f'{n}' for n in range(43)] # Each number represents a class
 
 # Preprocess images to prepare them for the model
 # The preprocess function subtracts the average RGB Value from every pixel to normalize the images
-train_batches = ImageDataGenerator(preprocessing_function=preprocess_input)
-train_batches.flow_from_directory(
+train_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(
     directory=train_path,
     target_size=(224, 224),
     classes=classes,
     batch_size=32
 )
 
-valid_batches = ImageDataGenerator(preprocessing_function=preprocess_input)
-valid_batches.flow_from_directory(
+valid_batches = ImageDataGenerator(preprocessing_function=preprocess_input).flow_from_directory(
     directory=valid_path,
     target_size=(224, 224),
     classes=classes,

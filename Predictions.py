@@ -83,8 +83,7 @@ StreetSignModelVgg16 = load_model("Models/MLModelVGG16.h5")  # Loads in the VGG1
 StreetSignMobileNet = load_model("Models/StreetSignMobileNet.h5")  # Loads in the MobileNet Based Functional Model
 
 # Create test batches for VGG16, using VGG16 preprocessing. Avoids shuffling labels to create Confusion Matrix
-VGG16test_batches = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input)
-VGG16test_batches.flow_from_directory(
+VGG16test_batches = ImageDataGenerator(preprocessing_function=vgg16.preprocess_input).flow_from_directory(
     directory=test_path, 
     target_size=(224, 224),
     classes=[f'{n}' for n in range(43)],
@@ -93,8 +92,7 @@ VGG16test_batches.flow_from_directory(
 )
 
 # Create test batches for MobileNet, using MobileNet preprocessing
-MobileNetTestBatches = ImageDataGenerator(preprocessing_function=mobilenet.preprocess_input)
-MobileNetTestBatches.flow_from_directory(
+MobileNetTestBatches = ImageDataGenerator(preprocessing_function=mobilenet.preprocess_input).flow_from_directory(
     directory=test_path, 
     target_size=(224, 224), 
     batch_size=32, 
